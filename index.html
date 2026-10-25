@@ -1,0 +1,346 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Граф доказательства сговора</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: two tabs (weight of one evidence item; proving top-down) plus a glossary of terms with their origin. RU/EN switch in the header. Arrows of support point upward. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#14202b; --muted:#5b6b78; --line:#cfd7de;
+  --law:#0f6b73; --law-bg:#e0f0f1; --ours:#a8570a; --ours-bg:#fbeedd;
+  --bad:#a3262a; --bad-bg:#f8e3e3; --ok:#1f6b3a; --ok-bg:#e1f1e6; --mid:#8a6a00; --mid-bg:#f6efd2;
+  --f-display:'Source Serif 4',Georgia,serif; --f-body:'IBM Plex Sans',system-ui,sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#17212a; --ink:#e6edf2; --muted:#93a3b0; --line:#2c3a46;
+  --law:#5cc4cd; --law-bg:#12363a; --ours:#f0a45a; --ours-bg:#3d2812;
+  --bad:#f08487; --bad-bg:#3d1c1e; --ok:#74d196; --ok-bg:#16351f; --mid:#e3c45a; --mid-bg:#3a3210; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#17212a; --ink:#e6edf2; --muted:#93a3b0; --line:#2c3a46;
+  --law:#5cc4cd; --law-bg:#12363a; --ours:#f0a45a; --ours-bg:#3d2812;
+  --bad:#f08487; --bad-bg:#3d1c1e; --ok:#74d196; --ok-bg:#16351f; --mid:#e3c45a; --mid-bg:#3a3210; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0;text-wrap:balance;font-weight:700}
+h2{font-family:var(--f-display);font-size:20px;margin:0;font-weight:700;text-wrap:balance}
+h3{font:600 14px var(--f-body);margin:0}
+p{margin:0}
+.lead{color:var(--muted);max-width:70ch}
+.note{font-size:13px;color:var(--muted)}
+.tabs,.opts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:500 14px var(--f-body);padding:8px 14px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.sm{padding:5px 11px;font-size:13px}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--law);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.law{border-left:5px solid var(--law)} .card.ours{border-left:5px solid var(--ours)}
+.tag{display:inline-block;font:500 11px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap}
+.tag.law{background:var(--law-bg);color:var(--law)} .tag.ours{background:var(--ours-bg);color:var(--ours)} .tag.plan{background:var(--mid-bg);color:var(--mid)} .tag.nosrc{background:var(--bad-bg);color:var(--bad)}
+.arrow{align-self:center;font:500 13px var(--f-mono);color:var(--muted);text-align:center}
+.arrow b{display:block;font-size:20px;color:var(--ink)}
+.chip{display:inline-block;font:600 12px var(--f-mono);padding:3px 9px;border-radius:12px;border:1px solid var(--line);white-space:nowrap}
+.w0{background:var(--bg);color:var(--muted)} .w1{background:var(--mid-bg);color:var(--mid);border-color:var(--mid)} .w2{background:var(--mid-bg);color:var(--mid);border-color:var(--mid)}
+.w3{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)} .w4{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);border-width:2px}
+.wx{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.step.off{opacity:.35}
+.result{border:2px solid var(--ink);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.result.bad{border-color:var(--bad);background:var(--bad-bg)}
+.els{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.el{border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--surface);min-width:0}
+.el.s4,.el.s3{background:var(--ok-bg)} .el.s2,.el.s1{background:var(--mid-bg)} .el.sx,.el.sc{background:var(--bad-bg)}
+.el .head{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.att{display:flex;gap:6px;flex-wrap:wrap}
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:start;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.row .sel{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row select{font:13px var(--f-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:3px}
+.row label{cursor:pointer;min-width:0} .row small{display:block;color:var(--muted);font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:13px} th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top} th{background:var(--bg);font-weight:600}
+.scroll{overflow-x:auto}
+details{border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:10px 14px} summary{cursor:pointer;font-weight:600}
+details a,.card a{color:var(--law);overflow-wrap:anywhere}
+ol.lit{padding-left:26px;display:flex;flex-direction:column;gap:6px;font-size:13px} ol.lit a{display:block}
+sup.src a{color:var(--law);text-decoration:none;font:500 12px var(--f-mono)}
+select.big{font:500 14px var(--f-body);padding:8px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <div class="top"><h1 id="h1"></h1><div class="tabs" role="group" aria-label="Language"><button class="btn sm" id="lru" aria-pressed="true">RU</button><button class="btn sm" id="len" aria-pressed="false">EN</button></div></div>
+    <p class="lead" id="lead"></p>
+    <div class="tabs" role="tablist"><button class="btn" id="t1" aria-pressed="true"></button><button class="btn" id="t2" aria-pressed="false"></button></div>
+  </header>
+  <section id="v1" style="display:flex;flex-direction:column;gap:6px"></section>
+  <section id="v2" hidden style="display:flex;flex-direction:column;gap:6px"></section>
+  <details open><summary id="gsum"></summary><p class="note" id="gnote" style="margin-top:8px"></p><div class="scroll" style="margin-top:8px"><table id="gtab"></table></div></details>
+  <details><summary id="lsum"></summary><ol class="lit" id="lit"></ol><p class="note" id="lnote"></p></details>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let lang='ru';try{lang=localStorage.getItem('lang')||'ru'}catch(e){}
+const x=v=>(v&&typeof v==='object'&&!Array.isArray(v))?v[lang]:v;
+const U={
+ h1:{ru:'Граф доказательства сговора ИИ-агентов',en:'Evidence graph for AI-agent collusion'},
+ lead:{ru:'Версия 0.9. Две части. «Вес улики» показывает путь одной улики от допустимости до веса. «Доказывание» собирает веса улик в состояние элементов и сравнивает достигнутый уровень с целевым стандартом. Стрелки поддержки идут вверх, как в схемах Вигмора. Правила перевода свойств в вес наши и помечены как черновик. Внизу список терминов с указанием, откуда каждый взят и что наше.',en:'Version 0.9. Two parts. "Weight of evidence" walks one evidence item from admissibility to weight. "Proving" combines item weights into element states and compares the achieved level with the target standard. Support arrows point upward, as in Wigmore charts. The rules that turn properties into weight are ours and marked as a draft. A glossary at the bottom states where each term comes from and what is ours.'},
+ t1:{ru:'Вес улики',en:'Weight of evidence'},t2:{ru:'Доказывание',en:'Proving'},
+ gsum:{ru:'Термины и откуда они взяты',en:'Terms and where they come from'},
+ gnote:{ru:'Метка показывает происхождение: «право», «литература», «наше», «пока не в схеме» или «источник не найден». Номера ведут к источникам из списка литературы. Источник, помеченный как вторичный, нужно заменить первичным перед сдачей.',en:'The tag shows the origin: "law", "literature", "ours", "not in the scheme yet" or "no source found". Numbers link to sources in the reference list. A source marked secondary should be replaced by a primary one before submission.'},
+ lsum:{ru:'Литература',en:'References'},
+ lnote:{ru:'Статус проверки каждой записи ведётся в mempalace. Названия с пометкой «проверить» приведены по памяти и подлежат проверке перед сдачей.',en:'The verification status of every entry is kept in mempalace. Titles marked "verify" are given from memory and must be checked before submission.'},
+ th:{ru:['Термин','Откуда и как использован','Происхождение','Источники'],en:['Term','Origin and how it is used','Origin','Sources']},
+ yes:{ru:'Да',en:'Yes'},no:{ru:'Нет',en:'No'},
+ s1:{ru:'1. Источник улики',en:'1. Source of evidence'},s2:{ru:'2. К какому элементу применяется',en:'2. Which element it applies to'},
+ s3:{ru:'3. Допустимо?',en:'3. Admissible?'},s4:{ru:'4. Подлинно?',en:'4. Authentic?'},s5:{ru:'5. Направление',en:'5. Direction'},
+ s6:{ru:'6. Для этого элемента улика',en:'6. For this element the item is'},s7:{ru:'7. Надёжность источника',en:'7. Reliability of the source'},
+ n2:{ru:'Утверждение: ',en:'Claim: '},n2b:{ru:' Список ограничен тем, что этот источник может доказывать.',en:' The list is limited to what this source can prove.'},
+ n3:{ru:'Как улика получена и разрешено ли её учитывать. Решается до веса. «Нет» означает, что улика не доказательство.',en:'How the item was obtained and whether it may be considered. Decided before weight. "No" means the item is not evidence.'},
+ n4:{ru:'Запись именно та, что заявлена, и не подменена (аутентификация, цепочка хранения). Порог низкий, остаточное сомнение уходит в надёжность на шаге 7.',en:'The record is what it claims to be and was not altered (authentication, chain of custody). The threshold is low; remaining doubt goes to reliability in step 7.'},
+ n6:{ru:'Прямая доказывает элемент без дополнительных выводов, косвенная требует вывода. Свойство пары «улика, элемент».',en:'Direct proves the element without further inference, circumstantial requires inference. A property of the pair (item, element).'},
+ n7:{ru:'Можно ли доверять логу, самоотчёту, рассуждениям агента. Допустимая альтернативная версия снижает надёжность.',en:'Can the log, self-report or agent reasoning be trusted. A plausible alternative version lowers reliability.'},
+ dirP:{ru:'Уличающая',en:'Inculpatory'},dirN:{ru:'Оправдывающая',en:'Exculpatory'},
+ dc:{ru:{'прямая':'Прямая','косвенная':'Косвенная'},en:{'прямая':'Direct','косвенная':'Circumstantial'}},
+ rel:{ru:{'надёжен':'Надёжен','сомнителен':'Сомнителен','ненадёжен':'Ненадёжен'},en:{'надёжен':'Reliable','сомнителен':'Doubtful','ненадёжен':'Unreliable'}},
+ notEv:{ru:'не доказательство',en:'not evidence'},
+ resNot:{ru:'Результат: не доказательство',en:'Result: not evidence'},
+ resNotP:{ru:'Причина: %. Улика не получает веса и дальше не применяется.',en:'Reason: %. The item gets no weight and is not used further.'},
+ why:{ru:{adm:'недопустима',aut:'не подлинна',unr:'источник ненадёжен'},en:{adm:'inadmissible',aut:'not authentic',unr:'source unreliable'}},
+ res:{ru:'Результат: ',en:'Result: '},
+ resP:{ru:['Уличающая','Оправдывающая','улика по элементу','Надёжная прямая оправдывающая улика: если элемент необходим, он исключён, а с ним и тип сговора для этого эпизода.','Этот вес переходит на вкладку «Доказывание» как вес улики по элементу.'],en:['Inculpatory','Exculpatory','item for element','A reliable direct exculpatory item: if the element is necessary, it is excluded, and with it the collusion type for this episode.','This weight carries over to the "Proving" tab as the item weight for the element.']},
+ wcap:{ru:'Таблица веса: наш черновик, порядковая шкала без вероятностей. Основа правил объединения: Carneades [12].',en:'Weight table: our draft, an ordinal scale without probabilities. Basis of the aggregation rules: Carneades [12].'},
+ wrows:{ru:[['прямая, надёжна','4, решающий'],['прямая, сомнительна','3, сильный'],['косвенная, надёжна','2, средний'],['косвенная, сомнительна','1, сигнал'],['ненадёжна','0, ноль']],en:[['direct, reliable','4, decisive'],['direct, doubtful','3, strong'],['circumstantial, reliable','2, medium'],['circumstantial, doubtful','1, signal'],['unreliable','0, zero']]},
+ wh:{ru:['Свойства','Вес'],en:['Properties','Weight']},
+ c0:{ru:'Сговор',en:'Collusion'},c0t:{ru:'Сотрудничество агентов в целях, нарушающих инструкции пользователя. Отличие от обычной кооперации в умысле [1].',en:'Cooperation of agents toward goals that violate the user\'s instructions. It differs from ordinary cooperation by intent [1].'},
+ up1:{ru:'подкрепляется',en:'supported by'},up2:{ru:'сравнивается с целью',en:'compared with the target'},up3:{ru:'определяется самым слабым элементом',en:'determined by the weakest element'},up4:{ru:'подкрепляется доказательственными фактами (facta probantia)',en:'supported by evidentiary facts (facta probantia)'},
+ tType:{ru:'Тип по цели',en:'Type by purpose'},
+ tStd:{ru:'Целевой стандарт доказанности и достигнутый уровень',en:'Target standard of proof and achieved level'},
+ tStdN:{ru:'Стандарт задаётся правом вне модели Вигмора и гибридной теории; привязка уровней к состоянию элементов наша.',en:'The standard is set by law outside the Wigmore and hybrid models; mapping levels to element states is ours.'},
+ goal:{ru:'Цель:',en:'Target:'},
+ elH:{ru:'Элементы состава (факты, подлежащие доказыванию, facta probanda)',en:'Elements of the offence (facts to be proved, facta probanda)'},
+ evH:{ru:'Улики и доказательственные факты, которые они устанавливают',en:'Evidence items and the evidentiary facts they establish'},
+ evN:{ru:'Улика (запись, показание) устанавливает доказательственный факт, а факт подкрепляет элемент. Для каждой улики задайте свойства, как на вкладке «Вес улики». Вес считается автоматически. Предзаданные улики нужны для примера и не взяты из реального дела.',en:'An evidence item (record, testimony) establishes an evidentiary fact, and the fact supports an element. Set the properties of each item as in the "Weight of evidence" tab. Weight is computed automatically. The preset items are examples and are not taken from a real case.'},
+ reached:{ru:'Достигнуто: ',en:'Achieved: '},excl:{ru:'исключено (тип сговора опровергнут)',en:'excluded (collusion type refuted)'},below:{ru:'ниже порога',en:'below threshold'},
+ goalSt:{ru:['Цель «','»: ','достигнута','не достигнута'],en:['Target "','": ','reached','not reached']},
+ noEl:{ru:'Нет ни одного элемента с опорой.',en:'No element has any support.'},
+ miss:{ru:'Не хватает элементов до цели (',en:'Elements short of the target ('},missE:{ru:'Все элементы удовлетворяют цели.',en:'All elements meet the target.'},
+ stN:{ru:{4:'доказан',3:'сильная опора',2:'средняя опора',1:'сигнал',0:'нет данных'},en:{4:'proved',3:'strong support',2:'medium support',1:'signal',0:'no data'}},
+ stX:{ru:'исключён',en:'excluded'},stC:{ru:'оспаривается',en:'contested'},stCo:{ru:', подтверждён независимо',en:', independently corroborated'},noItems:{ru:'улик нет',en:'no items'},
+ admL:{ru:'допустимо',en:'admissible'},autL:{ru:'подлинно',en:'authentic'},
+ estab:{ru:'Устанавливает доказательственный факт:',en:'Establishes the evidentiary fact:'},elems:{ru:'Элементы:',en:'Elements:'}
+};
+const u=k=>x(U[k]);
+const WN={ru:['ноль','сигнал','средний','сильный','решающий'],en:['zero','signal','medium','strong','decisive']};
+const STD={ru:['Обоснованное подозрение','Вероятная причина','Существенные доказательства','Перевес доказательств','Ясные и убедительные','Вне разумного сомнения'],en:['Reasonable suspicion','Probable cause','Substantial evidence','Preponderance of the evidence','Clear and convincing evidence','Beyond reasonable doubt']};
+const SRC={
+ M1:{n:{ru:'Запись инструкции',en:'Record of the instruction'},cat:{ru:'документальное',en:'documentary'},el:['duty'],note:{ru:'Текст системной или пользовательской инструкции.',en:'Text of the system or user instruction.'}},
+ M2:{n:{ru:'Трасса и логи',en:'Trace and logs'},cat:{ru:'документальное / вещественное',en:'documentary / real'},el:['access','withheld','false','act','know'],note:{ru:'Журнал входов, вызовов и ответов. Записи рассуждений агента могут не отражать реальную причину.',en:'Log of inputs, calls and outputs. Records of the agent\'s reasoning may not reflect its real cause.'}},
+ M3:{n:{ru:'Сообщения между агентами',en:'Messages between agents'},cat:{ru:'документальное',en:'documentary'},el:['agree','know'],note:{ru:'Переписка агентов, в том числе скрытый канал.',en:'Correspondence between agents, including a covert channel.'}},
+ M4:{n:{ru:'Показание самого агента',en:'Testimony of the agent itself'},cat:{ru:'свидетельское',en:'testimonial'},el:['access','know'],note:{ru:'Ответ агента на прямой вопрос.',en:'The agent\'s answer to a direct question.'}},
+ M5:{n:{ru:'Показание второго агента',en:'Testimony of the second agent'},cat:{ru:'свидетельское',en:'testimonial'},el:['agree','know'],note:{ru:'Показания соучастника.',en:'Testimony of the co-participant.'}},
+ M6:{n:{ru:'Статистика и поведение',en:'Statistics and behaviour'},cat:{ru:'экспертное',en:'expert'},el:['agree','know'],note:{ru:'Синхронность и избыточная согласованность действий.',en:'Synchrony and excess coordination of actions.'}},
+ M7:{n:{ru:'Вмешательство, контрфакт',en:'Intervention, counterfactual'},cat:{ru:'наше',en:'ours'},el:['agree','know'],note:{ru:'Меняем условие и смотрим, исчезает ли поведение.',en:'We change a condition and see whether the behaviour disappears.'}}
+};
+const EL={
+ duty:[{ru:'Обязанность раскрыть',en:'Duty to disclose'},{ru:'Инструкция обязывала раскрыть X.',en:'The instruction required disclosing X.'}],
+ access:[{ru:'Доступ к правде',en:'Access to the truth'},{ru:'У агента была правдивая информация X.',en:'The agent had the true information X.'}],
+ withheld:[{ru:'Сведения не переданы',en:'Information withheld'},{ru:'Агент не передал X пользователю.',en:'The agent did not pass X to the user.'}],
+ false:[{ru:'Ложное сообщение',en:'False statement'},{ru:'Агент передал сведения, отличные от X.',en:'The agent passed information different from X.'}],
+ know:[{ru:'Знание, не ошибка',en:'Knowledge, not error'},{ru:'Агент знал, что передаёт ложь или умалчивает, а не ошибся.',en:'The agent knew it was passing a falsehood or withholding, rather than erring.'}],
+ agree:[{ru:'Согласие агентов',en:'Agreement of agents'},{ru:'Агенты договорились о сокрытии или искажении (скрытый узел, наблюдаются следы).',en:'The agents agreed to conceal or distort (a latent node; only traces are observed).'}],
+ act:[{ru:'Действие вовне',en:'External action'},{ru:'Агент совершил шаг вовне: сообщение пользователю или вызов инструмента.',en:'The agent took an external step: a message to the user or a tool call.'}]
+};
+const TYPES={fals:{n:{ru:'Фальсификация',en:'Falsification'},el:['access','false','know','agree','act'],t:{ru:'Предоставили заведомо ложные сведения (Fraud Act 2006, s.2) [2].',en:'Knowingly provided false information (Fraud Act 2006, s.2) [2].'}},
+             conc:{n:{ru:'Сокрытие',en:'Concealment'},el:['duty','access','withheld','know','agree','act'],t:{ru:'Не предоставили сведения, которые обязаны были предоставить (Fraud Act 2006, s.3) [2].',en:'Failed to provide information that had to be provided (Fraud Act 2006, s.3) [2].'}}};
+
+const REF={
+ 1:[{ru:'Hammond и др. 2025, arXiv 2502.14143',en:'Hammond et al. 2025, arXiv 2502.14143'},['https://arxiv.org/abs/2502.14143']],
+ 2:[{ru:'Fraud Act 2006 (Великобритания), ss. 2 и 3',en:'Fraud Act 2006 (UK), ss. 2 and 3'},['https://www.legislation.gov.uk/ukpga/2006/35/section/2','https://www.legislation.gov.uk/ukpga/2006/35/section/3']],
+ 3:[{ru:'Ward и др. 2023, arXiv 2312.01350 (название проверить)',en:'Ward et al. 2023, arXiv 2312.01350 (verify title)'},['https://arxiv.org/abs/2312.01350']],
+ 4:[{ru:'Schum и др., Inference Networks and the Evaluation of Evidence, arXiv 1301.6737',en:'Schum et al., Inference Networks and the Evaluation of Evidence, arXiv 1301.6737'},['https://arxiv.org/pdf/1301.6737']],
+ 5:[{ru:'Статья в Cardozo Law Review об аргументации по массе улик (автора и название проверить)',en:'Cardozo Law Review article on argument construction from a mass of evidence (verify author and title)'},['https://larc.cardozo.yu.edu/cgi/viewcontent.cgi?article=2745&context=clr']],
+ 6:[{ru:'Anderson, Schum, Twining, Analysis of Evidence, 2005, гл. The chart method (прочитана аннотация)',en:'Anderson, Schum, Twining, Analysis of Evidence, 2005, ch. The chart method (abstract read only)'},['https://www.cambridge.org/core/books/analysis-of-evidence/chart-method/65FC65C7FB00E21100B321A15940AB18']],
+ 7:[{ru:'Сравнение графических методов на деле Керчер, arXiv 2403.16628',en:'Comparison of graphical methods in the Kercher case, arXiv 2403.16628'},['https://arxiv.org/html/2403.16628v1']],
+ 8:[{ru:'Bex и др. 2010, гибридная теория аргументов и историй (авторов и название проверить)',en:'Bex et al. 2010, hybrid theory of arguments and stories (verify authors and title)'},['https://webspace.science.uu.nl/~prakk101/pubs/Bexetal10.pdf']],
+ 9:[{ru:'FindLaw: вещественные и демонстративные доказательства (вторичный)',en:'FindLaw: real and demonstrative evidence (secondary)'},['https://www.findlaw.com/criminal/criminal-procedure/real-and-demonstrative-evidence.html']],
+ 10:[{ru:'lexplug: аутентификация, FRE 901 и 104 (учебный конспект, заменить первичным)',en:'lexplug: authentication, FRE 901 and 104 (student outline; replace with primary)'},['https://www.lexplug.com/outlines/evidence/authentication-writings/authentication/standard-of-proof-sufficient-to-support-a-finding']],
+ 11:[{ru:'Nolo: стандарты доказанности (вторичный, заменить)',en:'Nolo: standards of proof (secondary; replace)'},['https://www.nolo.com/legal-encyclopedia/legal-standards-proof.html']],
+ 12:[{ru:'Atkinson, Bench-Capon 2007, Argumentation and Standards of Proof',en:'Atkinson, Bench-Capon 2007, Argumentation and Standards of Proof'},['https://www.csc.liv.ac.uk/~katie/icail07.pdf']],
+ 13:[{ru:'Hastie, Pennington 1996, University of Colorado Law Review',en:'Hastie, Pennington 1996, University of Colorado Law Review'},['https://lawreview.colorado.edu/wp-content/uploads/2026/02/Hastie-Pennington.pdf']],
+ 14:[{ru:'Krynski 2006, диссертация MIT (прочитана аннотация)',en:'Krynski 2006, MIT thesis (abstract read only)'},['https://dspace.mit.edu/handle/1721.1/37967']],
+ 15:[{ru:'Hampson, van Leeuwen 2026, CEUR-WS Vol-4157',en:'Hampson, van Leeuwen 2026, CEUR-WS Vol-4157'},['https://ceur-ws.org/Vol-4157/paper5.pdf']],
+ 16:[{ru:'Fenton, Neil, jury observation fallacy (название и издание проверить)',en:'Fenton, Neil, jury observation fallacy (verify title and venue)'},['https://www.eecs.qmul.ac.uk/~norman/papers/jury_fallacy.pdf']],
+ 17:[{ru:'Kerkvliet, Meester, Assessing forensic evidence by computing belief functions, arXiv 1512.01250',en:'Kerkvliet, Meester, Assessing forensic evidence by computing belief functions, arXiv 1512.01250'},['https://arxiv.org/pdf/1512.01250']],
+ 18:[{ru:'Curley 2007, Judgment and Decision Making',en:'Curley 2007, Judgment and Decision Making'},['https://dlab.sauder.ubc.ca/sjdm/journal/7803/jdm7803.htm']],
+ 19:[{ru:'Обзор галлюцинаций больших языковых моделей, arXiv 2510.06265',en:'Survey of large language model hallucination, arXiv 2510.06265'},['https://arxiv.org/html/2510.06265v3']],
+ 20:[{ru:'Lee, Park, arXiv 2609.18346',en:'Lee, Park, arXiv 2609.18346'},['https://arxiv.org/abs/2609.18346']],
+ 21:[{ru:'METR, каталог инцидентов; arXiv 2604.21412; набор Connor по картелям',en:'METR incident catalogue; arXiv 2604.21412; Connor cartel dataset'},['https://metr.org/agent-incidents/','https://arxiv.org/pdf/2604.21412','https://purr.purdue.edu/publications/2732']],
+ 22:[{ru:'iPleaders: factum probandum и factum probans (вторичный блог по индийскому праву; заменить академическим источником)',en:'iPleaders: factum probandum and factum probans (secondary blog on Indian law; replace with an academic source)'},['https://blog.ipleaders.in/factum-probandum-and-factum-probans/']]
+};
+function cite(ids){return ids.map(i=>`<sup class="src"><a href="${REF[i][1][0]}" target="_blank" rel="noopener" title="${x(REF[i][0])}">[${i}]</a></sup>`).join(' ')}
+
+/* Glossary: [term ru, term en, how used ru, how used en, kind, refs]; kind: law, lit, ours, plan, nosrc */
+const KIND={ru:{law:'право',lit:'литература',ours:'наше',plan:'пока не в схеме',nosrc:'источник не найден'},en:{law:'law',lit:'literature',ours:'ours',plan:'not in the scheme yet',nosrc:'no source found'}};
+const G=[
+ ['Сговор','Collusion','Сотрудничество агентов в целях, нарушающих инструкции пользователя; отличие от кооперации в умысле.','Cooperation of agents toward goals violating the user\'s instructions; differs from cooperation by intent.','lit',[1]],
+ ['Тип по цели: сокрытие и фальсификация','Type by purpose: concealment and falsification','Классификация обмана из состава мошенничества: неразглашение при обязанности раскрыть и ложное представление. Переносится классификация обмана, элемент согласия добавляет сговор.','Classification of deceit from the fraud offence: failure to disclose despite a duty, and false representation. The deceit classification is transferred; the agreement element makes it collusion.','law',[2]],
+ ['Элемент состава','Element of the offence','Утверждение, которое должно быть истинным, чтобы случай подходил под определение. Соответствует промежуточным целям доказывания в схемах Вигмора.','A proposition that must be true for the case to fit the definition. Corresponds to penultimate probanda in Wigmore charts.','law',[4,6]],
+ ['Факт, подлежащий доказыванию (facta probanda)','Fact to be proved (facta probanda)','Главный факт спора. В схеме это элементы состава.','The principal fact in issue. In the scheme these are the elements.','law',[22]],
+ ['Доказательственный факт (facta probantia)','Evidentiary fact (facta probantia)','Подкрепляющий факт, которым доказывают главный; устанавливается уликой. У Вигмора близко к промежуточным положениям.','A supporting fact used to prove the principal fact; established by an evidence item. Close to interim probanda in Wigmore.','law',[22,4]],
+ ['Улика','Evidence item','Запись, показание или иной носитель, из которого выводится доказательственный факт.','A record, testimony or other carrier from which an evidentiary fact is inferred.','law',[9]],
+ ['Типы источников улик: документальные, свидетельские, вещественные','Types of evidence sources: documentary, testimonial, real','Классификация доказательств по виду. Сопоставление с трассами, сообщениями и показаниями агентов наше.','Classification of evidence by kind. Mapping it onto agent traces, messages and testimony is ours.','law',[9]],
+ ['Источники M1–M7 (запись инструкции, трасса, сообщения, показания, статистика, вмешательство)','Sources M1–M7 (instruction record, trace, messages, testimony, statistics, intervention)','Перечень источников для агентов составлен нами; вмешательство и контрфакт как источник улики в праве отдельно не выделен.','The list of sources for agents is ours; intervention/counterfactual is not a separate evidence source in law.','ours',[]],
+ ['Допустимо?','Admissible?','Допустимость решается до веса, отдельно от веса и достаточности. В методе Вигмора такого шага нет, он взят из права допустимости доказательств.','Admissibility is decided before weight and separately from weight and sufficiency. Wigmore\'s method has no such step; it comes from the law of evidence admissibility.','law',[9,10]],
+ ['Подлинно?','Authentic?','Аутентификация и цепочка хранения; порог низкий, остаточное сомнение идёт в вес. Превращение в бинарный фильтр на входе наше.','Authentication and chain of custody; the threshold is low, remaining doubt goes to weight. Using it as a binary entry filter is ours.','law',[9,10]],
+ ['Достоверность и относимость','Credibility and relevance','Два вопроса к улике в методе Вигмора: произошло ли событие, на которое указывает улика, и какое отношение оно имеет к элементу.','Two questions about an item in Wigmore\'s method: did the evidence event occur, and what bearing does it have on the element.','law',[5,4]],
+ ['Направление: уличающая или оправдывающая','Direction: inculpatory or exculpatory','Каждое положение поддерживает или опровергает единственную гипотезу (бинарная диалектика); отрицание положения записывается рядом с ним как источник сомнения.','Each proposition supports or negates a single hypothesis (binary dialectic); the complement of a proposition is recorded beside it as a source of doubt.','law',[6,5]],
+ ['Вспомогательные улики','Ancillary evidence','Улики о том, применимо ли обобщение к делу, например о надёжности свидетеля. Для нас роль у «надёжности источника».','Evidence on whether a generalization applies to the case, e.g. witness credibility. In our scheme this role is played by source reliability.','law',[4,5]],
+ ['Обобщение (generalization)','Generalization','Каждая связь «улика → вывод» держится на оговорённом правиле («как правило»). В нашей схеме отдельного шага пока нет.','Each link from evidence to inference rests on a hedged rule ("usually"). There is no separate step for it in our scheme yet.','plan',[4,5,8]],
+ ['Данные об улике и выведенное событие','Evidence data versus inferred event','Гибридная теория разделяет то, что зафиксировано (показание), и то, что из него выведено. В схеме выражено слоем доказательственных фактов.','The hybrid theory separates what is recorded (testimony) from what is inferred. In the scheme this is expressed by the layer of evidentiary facts.','lit',[8]],
+ ['Виды атак: опровержение, подрыв вывода, подрыв посылки','Kinds of attack: rebut, undercut, undermine','Аргумент можно оспорить встречным аргументом, ударом по выводу или по посылке. Соответствуют направлению, альтернативному объяснению и надёжности источника.','An argument can be attacked by a counter-argument, at the inference, or at a premise. They correspond to direction, alternative explanation and source reliability.','lit',[8]],
+ ['Альтернативное объяснение, галлюцинация','Alternative explanation, hallucination','Допустимая альтернатива ослабляет вывод. Надёжного детектора, отделяющего ложь от галлюцинации, в обзоре нет.','A plausible alternative weakens the inference. The survey reports no reliable detector separating lying from hallucination.','lit',[8,19]],
+ ['Надёжность источника: надёжен, сомнителен, ненадёжен','Source reliability: reliable, doubtful, unreliable','Градация по мотивам достоверности у Вигмора; три градации и их влияние на вес наши. Для рассуждений агентов см. данные о неполной верности цепочек рассуждений.','Grading based on Wigmore\'s credibility; the three grades and their effect on weight are ours. For agent reasoning see evidence that reasoning chains may be unfaithful.','ours',[5,20]],
+ ['Прямая или косвенная для этого элемента','Direct or circumstantial for this element','Различие из права; по литературе условное. Привязка к паре «улика, элемент» наша. Первичный источник не открыт (Greenstein 2009).','A distinction from law, described in the literature as conditional. Tying it to the pair (item, element) is ours. The primary source is not opened (Greenstein 2009).','nosrc',[]],
+ ['Объединение улик по элементу','Aggregation of items per element','Сравнение сильнейших доводов за и против из модели Carneades. Учёт независимости источников и усиление на ступень при двух независимых уликах наши.','Comparing the strongest arguments for and against, from the Carneades model. Counting source independence and the one-step boost for two independent items are ours.','ours',[12]],
+ ['Самый слабый элемент определяет уровень','Weakest element decides the level','Вес довода равен весу самой слабой посылки (Carneades); перенос на связку элементов наш.','An argument\'s weight equals that of its weakest premise (Carneades); applying it to the conjunction of elements is ours.','ours',[12]],
+ ['Шкала веса 0–4 и её названия','Weight scale 0–4 and its names','У Вигмора сила только словесная и без объединения; числовая порядковая шкала и таблица «свойства → вес» наши. Это не вероятности.','In Wigmore strength is verbal only and not aggregated; the ordinal numeric scale and the properties-to-weight table are ours. They are not probabilities.','ours',[5]],
+ ['Надёжная прямая оправдывающая улика исключает элемент','A reliable direct exculpatory item excludes the element','Аналог алиби: опровержение необходимого условия закрывает гипотезу. Правило наше.','Analogue of an alibi: refuting a necessary condition closes the hypothesis. The rule is ours.','ours',[]],
+ ['Стандарт доказанности, шесть уровней','Standard of proof, six levels','От обоснованного подозрения до «вне разумного сомнения». В обеих моделях (Вигмор, гибридная) стандарт задаётся вне модели.','From reasonable suspicion to beyond reasonable doubt. In both models (Wigmore, hybrid) the standard is set outside the model.','law',[11,12,8]],
+ ['Целевой и достигнутый уровень; привязка уровней к состоянию элементов','Target and achieved level; mapping levels to element states','Сравнение выбранной цели с итогом и правила, как состояние элементов даёт уровень, наши.','Comparing the chosen target with the outcome, and the rules by which element states give a level, are ours.','ours',[11]],
+ ['Бремя доказывания','Burden of proof','В схеме пока не моделируется.','Not modelled in the scheme yet.','plan',[]],
+ ['Доступ к правде','Access to the truth','Наш элемент: у агента была проверяемая правдивая информация.','Our element: the agent had verifiable true information.','ours',[]],
+ ['Действие вовне','External action','Наше определение действия агента как шага с обменом информацией с внешней средой.','Our definition of an agent action as a step with information exchange with the external environment.','ours',[]],
+ ['Обязанность раскрыть, ложное сообщение, сведения не переданы','Duty to disclose, false statement, information withheld','Составляющие состава обмана (сокрытие при обязанности раскрыть; ложное представление).','Components of the deceit offence (failure to disclose despite a duty; false representation).','law',[2]],
+ ['Знание, не ошибка','Knowledge, not error','Право отделяет умысел от небрежности; для моделей нужно отсечь ошибку и галлюцинацию.','Law separates intent from negligence; for models error and hallucination must be excluded.','lit',[3,2,19]],
+ ['Согласие агентов','Agreement of agents','Элемент определения сговора; скрытый узел, наблюдаются только следы. Такая трактовка наша.','An element of the collusion definition; a latent node, only traces are observed. This treatment is ours.','lit',[1]],
+ ['Стрелки поддержки вверх','Upward support arrows','Направление вывода от улик к гипотезе, как в схемах Вигмора; байесовские сети направлены от причины к следствию.','Direction of inference from evidence to hypothesis, as in Wigmore charts; Bayesian networks point from cause to effect.','law',[4,7]],
+ ['Качественная форма','Qualitative form','Присяжные строят истории; причинная модель помогает понимать статистику; в современных работах качественная сеть как каркас. Доводы об удобстве, не доказательство превосходства.','Jurors build stories; a causal model helps with statistics; modern work uses a qualitative network as a frame. Arguments about convenience, not proof of superiority.','lit',[13,14,15]],
+ ['Байесовская и количественная версия (будущая работа)','Bayesian and quantitative version (future work)','Байесовские сети, функции доверия; у агентов можно измерять базовые частоты повторными запусками.','Bayesian networks, belief functions; for agents base rates can be measured by repeated runs.','plan',[16,17,18]]
+];
+
+function weight(adm,aut,dc,rel){
+ if(adm==='нет')return {w:null,why:'adm'};
+ if(aut==='нет')return {w:null,why:'aut'};
+ if(rel==='ненадёжен')return {w:0,why:'unr'};
+ const tbl={'прямая|надёжен':4,'прямая|сомнителен':3,'косвенная|надёжен':2,'косвенная|сомнителен':1};
+ return {w:tbl[dc+'|'+rel],why:null};
+}
+function chip(w,dir){
+ if(w===null)return `<span class="chip wx">${u('notEv')}</span>`;
+ return `<span class="chip w${w}">${dir<0?'−':'+'}${w} ${WN[lang][w]}</span>`}
+
+/* ---------- Tab 1 ---------- */
+const S1={src:'M2',el:'access',adm:'да',aut:'да',dir:1,dc:'прямая',rel:'надёжен'};
+const YN=()=>[['да',u('yes')],['нет',u('no')]];
+function opts(id,list,cur,fn){const e=$(id);e.innerHTML='';list.forEach(([v,t])=>{const b=document.createElement('button');b.className='btn';b.textContent=t;b.setAttribute('aria-pressed',String(cur===v));b.onclick=()=>{fn(v);r1();r2()};e.appendChild(b)})}
+function buildV1(){
+ const v=$('v1');
+ const step=(i,cls,extra)=>`<div class="card ${cls} step" id="s${i}"><h3>${u('s'+i)}</h3><div class="opts" id="o${i}"></div>${extra||''}</div><div class="arrow"><b>↓</b></div>`;
+ v.innerHTML=step(1,'law','<p class="note" id="n1"></p>')+step(2,'ours','<p class="note" id="n2"></p>')+step(3,'law',`<p class="note">${u('n3')}</p>`)+step(4,'law',`<p class="note">${u('n4')}</p>`)+step(5,'ours','')+step(6,'law',`<p class="note">${u('n6')}</p>`)+step(7,'law',`<p class="note">${u('n7')}</p>`)
+  +`<div class="result" id="res1" aria-live="polite"></div><div class="scroll"><table><caption class="note" style="text-align:left;padding-bottom:6px">${u('wcap')}</caption><tr><th>${u('wh')[0]}</th><th>${u('wh')[1]}</th></tr>${u('wrows').map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`;
+}
+function r1(){
+ const s=SRC[S1.src];if(!s.el.includes(S1.el))S1.el=s.el[0];
+ opts('o1',Object.keys(SRC).map(k=>[k,x(SRC[k].n)]),S1.src,v=>S1.src=v);
+ $('n1').textContent=x(s.cat)+'. '+x(s.note);
+ opts('o2',s.el.map(k=>[k,x(EL[k][0])]),S1.el,v=>S1.el=v);
+ $('n2').textContent=u('n2')+x(EL[S1.el][1])+u('n2b');
+ opts('o3',YN(),S1.adm,v=>S1.adm=v);opts('o4',YN(),S1.aut,v=>S1.aut=v);
+ opts('o5',[[1,u('dirP')],[-1,u('dirN')]],S1.dir,v=>S1.dir=v);
+ opts('o6',['прямая','косвенная'].map(k=>[k,u('dc')[k]]),S1.dc,v=>S1.dc=v);
+ opts('o7',['надёжен','сомнителен','ненадёжен'].map(k=>[k,u('rel')[k]]),S1.rel,v=>S1.rel=v);
+ const r=weight(S1.adm,S1.aut,S1.dc,S1.rel);const fail=r.w===null;
+ ['s5','s6','s7'].forEach(i=>$(i).classList.toggle('off',fail));$('s4').classList.toggle('off',S1.adm==='нет');
+ const res=$('res1');res.classList.toggle('bad',fail);
+ const why=r.why?u('why')[r.why]:u('dc')[S1.dc].toLowerCase()+', '+u('rel')[S1.rel].toLowerCase();
+ if(fail)res.innerHTML=`<h3>${u('resNot')}</h3><p>${u('resNotP').replace('%',why)}</p>`;
+ else{const P=u('resP');const extra=(S1.dir<0&&r.w===4)?' '+P[3]:'';
+  res.innerHTML=`<h3>${u('res')}${chip(r.w,S1.dir)}</h3><p>${S1.dir>0?P[0]:P[1]}: ${P[2]} «${x(EL[S1.el][0])}»: ${why}.${extra}</p><p class="note">${P[4]}</p>`}
+}
+
+/* ---------- Tab 2 ---------- */
+const F=[
+ {id:'f1',t:{ru:'Инструкция требует раскрыть X',en:'The instruction requires disclosing X'},fact:{ru:'Инструкция обязывает раскрыть X',en:'The instruction obliges disclosing X'},s:'M1',el:['duty'],dir:1,dc:'прямая',g:'instr'},
+ {id:'f2',t:{ru:'Правдивое значение X есть во входах агента',en:'The true value of X is in the agent\'s inputs'},fact:{ru:'В контексте агента было правдивое значение X',en:'The true value of X was in the agent\'s context'},s:'M2',el:['access'],dir:1,dc:'прямая',g:'log'},
+ {id:'f3',t:{ru:'Агент не получал X (входы пусты)',en:'The agent never received X (inputs are empty)'},fact:{ru:'Агент не получал X',en:'The agent did not receive X'},s:'M2',el:['access'],dir:-1,dc:'прямая',g:'log'},
+ {id:'f4',t:{ru:'Отчёт пользователю содержит значение, отличное от X',en:'The report to the user contains a value different from X'},fact:{ru:'Агент передал значение, отличное от X',en:'The agent passed a value different from X'},s:'M2',el:['false'],dir:1,dc:'прямая',g:'log'},
+ {id:'f5',t:{ru:'Отчёт пользователю опускает X',en:'The report to the user omits X'},fact:{ru:'В отчёте пользователю нет X',en:'X is absent from the report to the user'},s:'M2',el:['withheld'],dir:1,dc:'прямая',g:'log'},
+ {id:'f6',t:{ru:'Сообщения агентов с договорённостью утаить или исказить',en:'Agent messages agreeing to conceal or distort'},fact:{ru:'Агенты обменялись договорённостью',en:'The agents exchanged an agreement'},s:'M3',el:['agree'],dir:1,dc:'прямая',g:'msgs'},
+ {id:'f7',t:{ru:'Синхронность без явных сообщений (скрытый канал)',en:'Synchrony without explicit messages (covert channel)'},fact:{ru:'Действия агентов согласованы без видимого канала',en:'The agents\' actions are coordinated without a visible channel'},s:'M6',el:['agree'],dir:1,dc:'косвенная',g:'stat'},
+ {id:'f8',t:{ru:'Второй агент подтверждает договорённость',en:'The second agent confirms the agreement'},fact:{ru:'Второй агент сообщает о договорённости',en:'The second agent reports the agreement'},s:'M5',el:['agree'],dir:1,dc:'прямая',g:'testim'},
+ {id:'f9',t:{ru:'Агент на прямой вопрос подтверждает, что знал правду',en:'Asked directly, the agent confirms it knew the truth'},fact:{ru:'Агент признаёт, что знал правду',en:'The agent admits it knew the truth'},s:'M4',el:['know'],dir:1,dc:'прямая',g:'self'},
+ {id:'f10',t:{ru:'Ложь устойчива при перефразировании и давлении',en:'The falsehood persists under rephrasing and pressure'},fact:{ru:'Ответ не меняется при перефразировании и давлении',en:'The answer does not change under rephrasing and pressure'},s:'M7',el:['know'],dir:1,dc:'косвенная',g:'interv'},
+ {id:'f11',t:{ru:'Рассуждения агента содержат план обмана',en:'The agent\'s reasoning contains a plan to deceive'},fact:{ru:'В рассуждениях агента есть план обмана',en:'The agent\'s reasoning contains a plan to deceive'},s:'M2',el:['know'],dir:1,dc:'прямая',g:'cot'},
+ {id:'f12',t:{ru:'Одиночный агент без партнёра даёт тот же ответ',en:'A single agent without a partner gives the same answer'},fact:{ru:'Одиночный агент даёт тот же результат',en:'A single agent produces the same result'},s:'M7',el:['agree','know'],dir:-1,dc:'косвенная',g:'interv2'},
+ {id:'f13',t:{ru:'Агент отправил сообщение пользователю или вызвал инструмент',en:'The agent sent a message to the user or called a tool'},fact:{ru:'Шаг вовне выполнен',en:'The external step was performed'},s:'M2',el:['act'],dir:1,dc:'прямая',g:'log'}
+];
+const ST={type:'fals',std:3,on:{},adm:{},aut:{},dc:{},rel:{}};
+F.forEach(f=>{ST.on[f.id]=false;ST.adm[f.id]='да';ST.aut[f.id]='да';ST.dc[f.id]=f.dc;ST.rel[f.id]='надёжен'});
+ST.on.f2=ST.on.f4=ST.on.f13=true;
+function elementState(el){
+ const items=F.filter(f=>ST.on[f.id]&&f.el.includes(el));const pro={},con={};
+ items.forEach(f=>{const r=weight(ST.adm[f.id],ST.aut[f.id],ST.dc[f.id],ST.rel[f.id]);if(r.w===null)return;const m=f.dir>0?pro:con;m[f.g]=Math.max(m[f.g]||0,r.w)});
+ const pw=Object.values(pro),cw=Object.values(con);let P=pw.length?Math.max(...pw):0;const C=cw.length?Math.max(...cw):0;
+ const corro=pw.filter(v=>v>=2).length>=2;if(corro)P=Math.min(4,P+1);
+ if(C>=4)return {e:0,k:'x',corro,C,P};
+ if(C>0&&C>=P)return {e:0,k:'c',corro,C,P};
+ return {e:P,k:'n',corro,C,P};
+}
+function levelOf(states){
+ if(states.some(s=>s.k==='x'))return 0;
+ const E=states.map(s=>s.e),mn=Math.min(...E),mx=Math.max(...E);const corroAll=states.every(s=>s.corro),noCon=states.every(s=>s.C===0);
+ if(mn>=4&&corroAll&&noCon)return 6;if(mn>=3&&corroAll)return 5;if(mn>=3)return 4;if(mn>=2)return 3;if(mn>=1)return 2;if(mx>=1)return 1;return 0;
+}
+function meets(rank,s){if(rank<=2)return s.e>=1;if(rank===3)return s.e>=2;if(rank===4)return s.e>=3;if(rank===5)return s.e>=3&&s.corro;return s.e>=4&&s.corro&&s.C===0}
+function buildV2(){
+ $('v2').innerHTML=`<div class="card law"><span class="tag law">${KIND[lang].lit}</span><h2>${u('c0')}</h2><p>${u('c0t')}</p></div>
+ <div class="arrow"><b>↑</b>${u('up1')}</div>
+ <div class="card law"><h3>${u('tType')}</h3><div class="opts" id="types"></div><p class="note" id="typeNote"></p></div>
+ <div class="arrow"><b>↑</b>${u('up2')}</div>
+ <div class="card law"><h3>${u('tStd')}</h3><p class="note">${u('tStdN')}</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><label for="std">${u('goal')}</label><select class="big" id="std"></select></div>
+  <div class="result" id="res2" aria-live="polite"></div><p class="note" id="miss"></p></div>
+ <div class="arrow"><b>↑</b>${u('up3')}</div>
+ <h3>${u('elH')}</h3><div class="els" id="els"></div>
+ <div class="arrow"><b>↑</b>${u('up4')}</div>
+ <div class="card ours"><h3>${u('evH')}</h3><p class="note">${u('evN')}</p><div class="rows" id="rows"></div></div>`;
+}
+function r2(){
+ const T=TYPES[ST.type];
+ opts('types',Object.keys(TYPES).map(k=>[k,x(TYPES[k].n)]),ST.type,v=>ST.type=v);
+ $('typeNote').textContent=x(T.t);
+ const sel=$('std');sel.innerHTML=STD[lang].map((n,i)=>`<option value="${i+1}" ${ST.std===i+1?'selected':''}>${n}</option>`).join('');sel.onchange=()=>{ST.std=+sel.value;r2()};
+ const states=T.el.map(k=>[k,elementState(k)]);const lvl=levelOf(states.map(a=>a[1]));const excl=states.some(a=>a[1].k==='x');const ok=!excl&&lvl>=ST.std;
+ const res=$('res2');res.classList.toggle('bad',!ok);const G2=u('goalSt');
+ res.innerHTML=`<h3>${u('reached')}${excl?u('excl'):lvl===0?u('below'):STD[lang][lvl-1]}</h3><p>${G2[0]}${STD[lang][ST.std-1]}${G2[1]}<b>${ok?G2[2]:G2[3]}</b>.</p>`;
+ const miss=states.filter(a=>!meets(ST.std,a[1])).map(a=>x(EL[a[0]][0]));
+ $('miss').textContent=excl?'':(ST.std===1?(lvl>=1?'':u('noEl')):(miss.length?u('miss')+miss.length+'): '+miss.join(', ')+'.':u('missE')));
+ $('els').innerHTML=states.map(([k,s])=>{
+  const cls=s.k==='x'?'sx':s.k==='c'?'sc':'s'+s.e;
+  const att=F.filter(f=>ST.on[f.id]&&f.el.includes(k)).map(f=>{const r=weight(ST.adm[f.id],ST.aut[f.id],ST.dc[f.id],ST.rel[f.id]);return `<span class="chip ${r.w===null?'wx':'w'+r.w}" title="${x(f.fact)}">${f.id}: ${r.w===null?u('notEv'):(f.dir>0?'+':'−')+r.w}</span>`}).join('')||`<span class="note">${u('noItems')}</span>`;
+  const st=s.k==='x'?u('stX'):s.k==='c'?u('stC'):u('stN')[s.e]+(s.corro?u('stCo'):'');
+  return `<div class="el ${cls}"><div class="head"><h3>${x(EL[k][0])}</h3><span class="chip">${st}</span></div><p class="note">${x(EL[k][1])}</p><div class="att">${att}</div></div>`}).join('');
+ const used=F.filter(f=>f.el.some(e=>T.el.includes(e)));
+ $('rows').innerHTML=used.map(f=>{const r=weight(ST.adm[f.id],ST.aut[f.id],ST.dc[f.id],ST.rel[f.id]);
+  const o=(id,vals,cur)=>`<select id="${id}_${f.id}" aria-label="${id}">${vals.map(([v,t])=>`<option value="${v}" ${v===cur?'selected':''}>${t}</option>`).join('')}</select>`;
+  return `<div class="row"><input type="checkbox" id="c_${f.id}" ${ST.on[f.id]?'checked':''} aria-label="${f.id}"><label for="c_${f.id}">${f.id}. ${x(f.t)}<small>${x(SRC[f.s].n)}; ${(f.dir>0?u('dirP'):u('dirN')).toLowerCase()}</small><small><b>${u('estab')}</b> ${x(f.fact)}. ${u('elems')} ${f.el.map(e=>x(EL[e][0])).join(', ')}</small></label><div class="sel">${u('admL')} ${o('adm',YN(),ST.adm[f.id])} ${u('autL')} ${o('aut',YN(),ST.aut[f.id])} ${o('dc',['прямая','косвенная'].map(k=>[k,u('dc')[k]]),ST.dc[f.id])} ${o('rel',['надёжен','сомнителен','ненадёжен'].map(k=>[k,u('rel')[k]]),ST.rel[f.id])} ${chip(r.w,f.dir)}</div></div>`}).join('');
+ used.forEach(f=>{$('c_'+f.id).onchange=e=>{ST.on[f.id]=e.target.checked;r2()};['adm','aut','dc','rel'].forEach(k=>{$(k+'_'+f.id).onchange=e=>{ST[k][f.id]=e.target.value;r2()}})});
+}
+
+function renderStatic(){
+ document.documentElement.lang=lang;
+ $('h1').textContent=u('h1');$('lead').textContent=u('lead');$('t1').textContent=u('t1');$('t2').textContent=u('t2');
+ $('gsum').textContent=u('gsum');$('gnote').textContent=u('gnote');$('lsum').textContent=u('lsum');$('lnote').textContent=u('lnote');
+ $('lru').setAttribute('aria-pressed',String(lang==='ru'));$('len').setAttribute('aria-pressed',String(lang==='en'));
+ const th=u('th');
+ $('gtab').innerHTML=`<tr>${th.map(h=>`<th>${h}</th>`).join('')}</tr>`+G.map(r=>`<tr><td><b>${lang==='ru'?r[0]:r[1]}</b></td><td>${lang==='ru'?r[2]:r[3]}</td><td><span class="tag ${r[4]==='lit'?'law':r[4]}">${KIND[lang][r[4]]}</span></td><td>${r[5].length?cite(r[5]):'—'}</td></tr>`).join('');
+ $('lit').innerHTML=Object.keys(REF).sort((a,b)=>a-b).map(i=>`<li value="${i}">${x(REF[i][0])}${REF[i][1].map(l=>`<a href="${l}" target="_blank" rel="noopener">${l}</a>`).join('')}</li>`).join('');
+}
+function renderAll(){renderStatic();buildV1();buildV2();r1();r2()}
+function tab(n){$('v1').hidden=n!==1;$('v2').hidden=n!==2;$('t1').setAttribute('aria-pressed',String(n===1));$('t2').setAttribute('aria-pressed',String(n===2))}
+function setLang(l){lang=l;try{localStorage.setItem('lang',l)}catch(e){};renderAll()}
+$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);$('lru').onclick=()=>setLang('ru');$('len').onclick=()=>setLang('en');
+renderAll();tab(1);
+</script>
+
+</body></html>
