@@ -19,9 +19,21 @@ The weight table and aggregation rules are our draft: an ordinal scale, not prob
 
 Open `index.html` in a browser.
 
-## Data
+## Results and data
 
-`data/cases.md` lists every evidence type in the dataset with its source link and what the graph does with it, then the case configurations and the standard each one reaches. It is generated from the test output by `python3 data/build_cases.py`; `data/cases.csv` is the same table in machine-readable form. Both are rebuilt, not edited.
+`results/` holds everything the tests produce. `results/table.md` is the final table: every evidence type in the dataset with its source link and the answer the graph gives it, followed by the case configurations and the standard each one reaches. `results/table.csv` is the same table in machine-readable form. The rest of the folder is raw output: `summary.md`, `items.csv`, `cases.csv`, `sensitivity.csv`.
+
+Nothing in `results/` is edited by hand. Two commands rebuild it:
+
+```bash
+npm install      # once; jsdom only
+npm test         # runs the engine from index.html on the dataset
+npm run table    # formats results/table.md from the test output
+```
+
+`npm test` prints the whole report to the terminal as it runs — the evidence-type table, the case table, the sensitivity table, and ten assertions — and ends with `All 10 assertions passed.` or a non-zero exit code. It also writes the same text to `results/summary.md`. Output is deterministic and carries no timestamps, so two runs can be compared byte for byte.
+
+The tests exercise the real page code: `index.html` is loaded in jsdom and its own `weight`, `elementState` and `levelOf` functions are called. Nothing is re-implemented in the harness, so a change to the graph changes the results.
 
 ## Known gaps
 

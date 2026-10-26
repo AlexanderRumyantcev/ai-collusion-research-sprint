@@ -1,6 +1,6 @@
 # Results of tests/run.js
 
-Generated file, do not edit. Re-run with `npm test`. The engine is the code in `index.html`, loaded in jsdom; nothing is re-implemented here.
+Generated file, do not edit. Re-run with `npm test`. The engine is the code in `index.html`, loaded in jsdom; nothing is re-implemented here. This is the same text the run prints to the terminal.
 
 Labels in `evidence_types.json` were assigned by the author (single rater) with the rubric stated there. The results therefore show how the method behaves on this labelling. They do not measure whether the method is accurate.
 

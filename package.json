@@ -3,6 +3,11 @@
   "version": "0.9.0",
   "private": true,
   "description": "Evidence graph for AI-agent collusion: tests that run the real page code on a pool of published evidence types",
-  "scripts": { "test": "node tests/run.js" },
-  "devDependencies": { "jsdom": "24.1.0" }
+  "scripts": {
+    "test": "node tests/run.js",
+    "table": "python3 tests/build_table.py"
+  },
+  "devDependencies": {
+    "jsdom": "24.1.0"
+  }
 }

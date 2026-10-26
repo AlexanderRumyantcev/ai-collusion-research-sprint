@@ -2,14 +2,15 @@
 
 This folder runs the graph's own engine (the code in `../index.html`, loaded in jsdom, nothing re-implemented) on evidence types taken from published AI-collusion and deception-detection work.
 
-Run: `npm install && npm test` (Node 18+). The output is deterministic and has no timestamps, so the files in `results/` can be compared byte for byte between machines.
+Run: `npm install && npm test` (Node 18+). The run prints its full report to the terminal and writes the same text plus three CSV files to `../results/`. The output is deterministic and has no timestamps, so the files can be compared byte for byte between machines. `npm run table` then formats `../results/table.md`, the final table.
 
 ## Files
 
 - `evidence_types.json`: the dataset. One row per evidence type (T01 to T12) with the source link, what the source reports, the graph element it is mapped to, the source type (M1 to M7), the independence group, the direction, and the four labels the graph uses (admissible, authentic, directness, reliability), each with a written rationale. Rows that were not scored (X1 to X5) are listed with the reason.
 - `cases.json`: case configurations, i.e. which evidence types are present together. The expected level was computed by hand from the engine's rules before the first run.
 - `run.js`: the harness. It computes item weights, the standard reached in each case, a one-label sensitivity analysis, and ten assertions about the engine (zero-weight items change nothing, same-group repeats add nothing, monotonicity, and so on).
-- `results/items.csv`, `results/cases.csv`, `results/sensitivity.csv`, `results/summary.md`: generated output. The evidence-type table and the case table are the dataset's "evidence plus the graph's answer" form.
+- `build_table.py`: turns the generated CSVs into `../results/table.md` and `../results/table.csv`, the final table (all rows, scored and excluded).
+- `../results/items.csv`, `../results/cases.csv`, `../results/sensitivity.csv`, `../results/summary.md`: generated output. The evidence-type table and the case table are the dataset's "evidence plus the graph's answer" form.
 
 ## How to read the results
 

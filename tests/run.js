@@ -1,7 +1,8 @@
 'use strict';
 // Runs the evidence graph engine from ../index.html (the real page code, loaded in jsdom)
 // on the evidence types in evidence_types.json and the case configurations in cases.json.
-// Writes tests/results/{items,cases,sensitivity}.csv and summary.md. Output is deterministic.
+// Writes results/{items,cases,sensitivity}.csv and summary.md at the repository root.
+// Prints the same summary to the terminal. Output is deterministic.
 const fs = require('fs');
 const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
@@ -156,14 +157,14 @@ check('deterministic: two runs give identical results', run1 === run2);
 check('the page loaded without script errors', pageErrors === 0);
 
 // ---------- write ----------
-const outDir = path.join(here, 'results');
+const outDir = path.join(here, '..', 'results');
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'items.csv'), csv(itemRows));
 fs.writeFileSync(path.join(outDir, 'cases.csv'), csv(caseRows));
 fs.writeFileSync(path.join(outDir, 'sensitivity.csv'), csv(sensRows));
 
 const md = [];
-md.push('# Results of tests/run.js', '', 'Generated file, do not edit. Re-run with `npm test`. The engine is the code in `index.html`, loaded in jsdom; nothing is re-implemented here.', '',
+md.push('# Results of tests/run.js', '', 'Generated file, do not edit. Re-run with `npm test`. The engine is the code in `index.html`, loaded in jsdom; nothing is re-implemented here. This is the same text the run prints to the terminal.', '',
   'Labels in `evidence_types.json` were assigned by the author (single rater) with the rubric stated there. The results therefore show how the method behaves on this labelling. They do not measure whether the method is accurate.', '',
   '## Evidence types', '', '| id | evidence type | element (report -> demo) | source | direction | directness | reliability | weight |', '|---|---|---|---|---|---|---|---|');
 itemOut.forEach(({ r, signed }) => md.push(`| ${r.id} | ${r.title} | ${r.report_element} -> ${r.graph_element || 'none'} | ${r.graph_source} | ${r.direction > 0 ? 'inculpatory' : 'exculpatory'} | ${r.directness} | ${r.reliability} | ${signed} |`));
