@@ -19,6 +19,18 @@ The weight table and aggregation rules are our draft: an ordinal scale, not prob
 
 Open `index.html` in a browser.
 
+## Screenshots
+
+Static screenshots of `index.html` as it looks in a browser, with the interface switched to English. They are pictures of the page, not the page itself: open `index.html` to click through it.
+
+![The Weight of evidence tab: seven steps from source to weight, with the result and the weight table](docs/screenshot-weight.png)
+
+*The **Weight of evidence** tab. One evidence item is walked through seven steps — source, element, admissibility, authenticity, direction, directness, reliability — and comes out with an ordinal weight from 0 to 4. In this example a trace-and-logs item offered for access to the truth is direct and reliable, so it weighs 4 (decisive).*
+
+![The Proving tab: the collusion claim, the chosen standard, and the five elements of the offence](docs/screenshot-proving.png)
+
+*The **Proving** tab, read from the bottom up as in a Wigmore chart. The five elements of the offence are set against a chosen target standard; the weakest element caps the result, so here the graph returns reasonable suspicion and reports the target of substantial evidence as not reached, naming the two elements that fall short.*
+
 ## Results and data
 
 The repository is split into inputs, code and output:
