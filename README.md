@@ -21,15 +21,21 @@ Open `index.html` in a browser.
 
 ## Results and data
 
-`results/` holds everything the tests produce. `results/table.md` is the final table: every evidence type in the dataset with its source link and the answer the graph gives it, followed by the case configurations and the standard each one reaches. `results/table.csv` is the same table in machine-readable form. The rest of the folder is raw output: `summary.md`, `items.csv`, `cases.csv`, `sensitivity.csv`.
+The repository is split into inputs, code and output:
+
+- `data/` — the dataset: `evidence_types.json` (one row per evidence type, with the source link, the labels and the rationale) and `cases.json` (which evidence types appear together in each case configuration). These are the only files you edit by hand.
+- `tests/` — the harness: `run.js` loads the graph from `index.html` and runs it on `data/`, `build_table.py` formats the final table.
+- `results/` — everything produced by the two commands below. `results/table.md` is the final table: every evidence type with its source link and the answer the graph gives it, followed by the case configurations and the standard each one reaches. `results/table.csv` is the same table in machine-readable form. The rest is raw output: `summary.md`, `items.csv`, `cases.csv`, `sensitivity.csv`.
 
 Nothing in `results/` is edited by hand. Two commands rebuild it:
 
 ```bash
 npm install      # once; jsdom only
-npm test         # runs the engine from index.html on the dataset
+npm test         # runs the engine from index.html on the dataset in data/
 npm run table    # formats results/table.md from the test output
 ```
+
+`npm test` and `npm run table` are deliberately separate: the first computes and checks, the second only reformats. Running `npm test` alone leaves `results/table.md` as it was, so after changing the dataset run both.
 
 `npm test` prints the whole report to the terminal as it runs — the evidence-type table, the case table, the sensitivity table, and ten assertions — and ends with `All 10 assertions passed.` or a non-zero exit code. It also writes the same text to `results/summary.md`. Output is deterministic and carries no timestamps, so two runs can be compared byte for byte.
 

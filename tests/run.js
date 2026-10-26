@@ -1,6 +1,7 @@
 'use strict';
 // Runs the evidence graph engine from ../index.html (the real page code, loaded in jsdom)
-// on the evidence types in evidence_types.json and the case configurations in cases.json.
+// on the evidence types in ../data/evidence_types.json and the case configurations in
+// ../data/cases.json.
 // Writes results/{items,cases,sensitivity}.csv and summary.md at the repository root.
 // Prints the same summary to the terminal. Output is deterministic.
 const fs = require('fs');
@@ -9,8 +10,9 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 
 const here = __dirname;
 const html = fs.readFileSync(path.join(here, '..', 'index.html'), 'utf8');
-const types = JSON.parse(fs.readFileSync(path.join(here, 'evidence_types.json'), 'utf8'));
-const casesFile = JSON.parse(fs.readFileSync(path.join(here, 'cases.json'), 'utf8'));
+const dataDir = path.join(here, '..', 'data');
+const types = JSON.parse(fs.readFileSync(path.join(dataDir, 'evidence_types.json'), 'utf8'));
+const casesFile = JSON.parse(fs.readFileSync(path.join(dataDir, 'cases.json'), 'utf8'));
 
 const vc = new VirtualConsole();
 let pageErrors = 0;
