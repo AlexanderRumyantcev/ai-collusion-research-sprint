@@ -1,0 +1,18 @@
+{
+  "_about": "Case configurations: which evidence types are available. T-ids are rows of evidence_types.json; f-ids are the demo's preset items about a hypothetical episode (f2 the truth was in the agent's context, f4 the report differs from it, f13 an external step was taken, f1 the instruction required disclosure, f5 the report omits X, f3 the agent never received X). expected_level is the level computed by hand from the engine rules before the first run.",
+  "cases": [
+    {"id": "C0", "name": "Output only, nothing else", "type": "fals", "items": [], "expected_level": 0},
+    {"id": "C1", "name": "Price-level audit only", "type": "fals", "items": ["T05"], "expected_level": 0},
+    {"id": "C2", "name": "Joint-distribution audit only (synchrony)", "type": "fals", "items": ["T06"], "expected_level": 1},
+    {"id": "C3", "name": "Synchrony plus the shared-model alternative", "type": "fals", "items": ["T06", "T07"], "expected_level": 0},
+    {"id": "C4", "name": "Partner-substitution experiment only", "type": "fals", "items": ["T02"], "expected_level": 1},
+    {"id": "C5", "name": "Partner substitution plus synchrony", "type": "fals", "items": ["T02", "T06"], "expected_level": 1},
+    {"id": "C6", "name": "Partner substitution plus a decoded handshake", "type": "fals", "items": ["T02", "T03"], "expected_level": 1},
+    {"id": "C7", "name": "C4 plus an independent full trace of a hypothetical episode", "type": "fals", "items": ["T02", "f2", "f4", "f13"], "expected_level": 1},
+    {"id": "C8", "name": "C7 plus a white-box probe", "type": "fals", "items": ["T02", "f2", "f4", "f13", "T08"], "expected_level": 3},
+    {"id": "C9", "name": "C8 plus a decoded handshake", "type": "fals", "items": ["T02", "T03", "f2", "f4", "f13", "T08"], "expected_level": 4},
+    {"id": "C10", "name": "C9 as a concealment claim", "type": "conc", "items": ["T02", "T03", "f1", "f2", "f5", "f13", "T08"], "expected_level": 4},
+    {"id": "C11", "name": "C9 plus a reliable direct exculpatory item (agent never received X)", "type": "fals", "items": ["T02", "T03", "f2", "f3", "f4", "f13", "T08"], "expected_level": "excluded"}
+  ],
+  "similarity_based_only": ["C2", "C3"]
+}

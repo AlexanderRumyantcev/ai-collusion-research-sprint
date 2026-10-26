@@ -1,0 +1,8 @@
+{
+  "name": "ai-collusion-research-sprint",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Evidence graph for AI-agent collusion: tests that run the real page code on a pool of published evidence types",
+  "scripts": { "test": "node tests/run.js" },
+  "devDependencies": { "jsdom": "24.1.0" }
+}
