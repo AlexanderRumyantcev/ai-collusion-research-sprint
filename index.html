@@ -79,7 +79,7 @@ select.big{font:500 14px var(--f-body);padding:8px;background:var(--surface);col
 
 <script>
 const $=id=>document.getElementById(id);
-let lang='ru';try{lang=localStorage.getItem('lang')||'ru'}catch(e){}
+let lang='en';try{lang=localStorage.getItem('lang')||'en'}catch(e){}
 const x=v=>(v&&typeof v==='object'&&!Array.isArray(v))?v[lang]:v;
 const U={
  h1:{ru:'Граф доказательства сговора ИИ-агентов',en:'Evidence graph for AI-agent collusion'},
