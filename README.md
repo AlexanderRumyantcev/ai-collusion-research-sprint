@@ -19,6 +19,10 @@ The weight table and aggregation rules are our draft: an ordinal scale, not prob
 
 Open `index.html` in a browser.
 
+## Data
+
+`data/cases.md` lists every evidence type in the dataset with its source link and what the graph does with it, then the case configurations and the standard each one reaches. It is generated from the test output by `python3 data/build_cases.py`; `data/cases.csv` is the same table in machine-readable form. Both are rebuilt, not edited.
+
 ## Known gaps
 
 Terminology and references in the glossary have not all been verified against primary sources; entries marked "verify" in the reference list are unchecked. Not yet modelled: burden of proof, an explicit layer separating the evidence record from the established fact, an alternative-explanation criterion, and a real graph drawing.
